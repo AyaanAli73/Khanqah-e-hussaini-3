@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel | Khanqah-e-Hussaini</title>
+    
+    <!-- External CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Project Styles -->
+    <link rel="stylesheet" href="css/admin.css">
+
+    <!-- Tailwind CSS -->
+    <script src="js/tailwindcss.js"></script>
+    <script src="js/config/tailwind-config.js"></script>
+</head>
+<body class="bg-gray-100 font-sans text-gray-800">
+
+    <div id="toast-container"></div>
+
+    <!-- SECURE LOGIN OVERLAY -->
+    <div id="loginOverlay" class="fixed inset-0 z-[100] bg-royal flex flex-col items-center justify-center transition-opacity duration-500">
+        <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md text-center mx-4 relative overflow-hidden">
+            <div class="mb-8">
+                <div class="w-16 h-16 bg-royal/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-shield-alt text-3xl text-royal"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-royal">Admin Security</h2>
+                <p class="text-gray-500 text-xs uppercase tracking-widest mt-1">Authorized Personnel Only</p>
+            </div>
+            <form id="loginForm" class="space-y-4 text-left">
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1 ml-1">Email Address</label>
+                    <div class="relative">
+                        <i class="fas fa-envelope absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                        <input type="email" id="adminEmail" required class="w-full pl-10 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold outline-none transition" placeholder="admin@khanqah.com">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1 ml-1">Password</label>
+                    <div class="relative">
+                        <i class="fas fa-lock absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                        <input type="password" id="adminPass" required class="w-full pl-10 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold outline-none transition" placeholder="••••••••">
+                    </div>
+                </div>
+                <button type="submit" id="loginBtn" class="w-full bg-royal text-white py-3 rounded-lg font-bold hover:bg-emerald transition shadow-lg shadow-royal/30">
+                    Secure Login
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MAIN LAYOUT -->
+    <div class="flex h-screen overflow-hidden">
+        
+        <!-- SIDEBAR -->
+        <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 w-64 bg-royal text-white transform -translate-x-full md:translate-x-0 transition-transform duration-300 flex flex-col shadow-2xl md:shadow-none md:relative">
+            <div class="p-6 flex items-center gap-3 border-b border-white/10">
+                <div class="w-10 h-10 bg-gold rounded-full flex items-center justify-center text-royal font-bold">K</div>
+                <div><h1 class="font-bold text-lg leading-none">Khanqah</h1><span class="text-xs text-gold/80 uppercase tracking-wider">Admin Panel</span></div>
+                <button onclick="toggleSidebar()" class="md:hidden ml-auto text-white"><i class="fas fa-times"></i></button>
+            </div>
+            <nav class="flex-1 p-4 space-y-2">
+                <a href="#" onclick="switchTab('active')" class="flex items-center gap-3 px-4 py-3 bg-white/10 rounded-lg text-gold font-bold"><i class="fas fa-ticket-alt w-5"></i> Dashboard</a>
+                
+                <button onclick="openSettingsModal()" class="w-full flex items-center gap-3 px-4 py-3 hover:bg-white/5 rounded-lg text-gray-300 transition text-left border border-gold/20 bg-gold/5"><i class="fas fa-sliders-h w-5 text-gold"></i> Site Settings</button>
+                
+                <button onclick="openScheduleModal()" class="w-full flex items-center gap-3 px-4 py-3 hover:bg-white/5 rounded-lg text-gray-300 transition text-left"><i class="fas fa-calendar-alt w-5"></i> Manage Schedule</button>
+                <button onclick="printAllTokens()" class="w-full flex items-center gap-3 px-4 py-3 hover:bg-white/5 rounded-lg text-gray-300 transition text-left"><i class="fas fa-print w-5"></i> Print List</button>
+                <button onclick="askDeleteAll()" class="w-full flex items-center gap-3 px-4 py-3 hover:bg-white/5 rounded-lg text-red-300 transition text-left"><i class="fas fa-trash w-5"></i> Delete All Data</button>
+                <a href="index.html" target="_blank" class="flex items-center gap-3 px-4 py-3 hover:bg-white/5 rounded-lg text-gray-300 transition"><i class="fas fa-external-link-alt w-5"></i> Visit Website</a>
+            </nav>
+            <div class="p-4 border-t border-white/10">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2 text-xs text-emerald-400"><span class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></span> Online</div>
+                    <button onclick="logout()" class="text-xs text-red-300 hover:text-white font-bold">LOGOUT</button>
+                </div>
+            </div>
+        </aside>
+
+        <div id="sidebarOverlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/50 z-30 hidden md:hidden"></div>
+
+        <main class="flex-1 flex flex-col h-full relative w-full">
+            <header class="h-16 bg-white shadow-sm flex justify-between items-center px-4 md:px-6 border-b border-gray-200 flex-shrink-0">
+                <div class="flex items-center gap-3">
+                    <button onclick="toggleSidebar()" class="md:hidden text-royal p-2"><i class="fas fa-bars text-xl"></i></button>
+                    <h2 class="font-bold text-lg md:text-xl text-gray-800">Bookings Database</h2>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="fetchData()" class="bg-gray-100 text-gray-600 p-2 rounded-lg hover:bg-gray-200 transition md:hidden"><i class="fas fa-sync-alt"></i></button>
+                    <button onclick="openAddModal()" class="bg-royal hover:bg-emerald text-white px-3 md:px-4 py-2 rounded-lg text-xs md:text-sm font-bold flex items-center gap-2 transition shadow-lg shadow-royal/20 whitespace-nowrap"><i class="fas fa-plus"></i> <span class="hidden md:inline">Manual Token</span><span class="md:hidden">Add</span></button>
+                </div>
+            </header>
+
+            <div class="flex-1 overflow-y-auto p-4 md:p-6 bg-gray-100">
+                <!-- STATS CARDS -->
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
+                    <!-- Total -->
+                    <div class="bg-white p-4 md:p-6 rounded-xl shadow-sm border border-gray-100 relative overflow-hidden">
+                         <div class="absolute right-0 top-0 h-full w-20 bg-gradient-to-l from-blue-50 to-transparent opacity-50"></div>
+                        <div class="flex justify-between items-start relative z-10">
+                            <div><p class="text-gray-400 text-[10px] uppercase font-bold tracking-wider">Total Bookings</p><h3 class="text-3xl font-bold text-royal mt-1" id="statTotal">0</h3></div>
+                            <div class="p-3 bg-blue-50 text-blue-600 rounded-lg"><i class="fas fa-users"></i></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Today -->
+                    <div class="bg-white p-4 md:p-6 rounded-xl shadow-sm border border-gray-100 relative overflow-hidden">
+                        <div class="absolute right-0 top-0 h-full w-20 bg-gradient-to-l from-emerald-50 to-transparent opacity-50"></div>
+                        <div class="flex justify-between items-start relative z-10">
+                            <div><p class="text-gray-400 text-[10px] uppercase font-bold tracking-wider">Reserved Today</p><h3 class="text-3xl font-bold text-emerald-700 mt-1" id="statToday">0</h3></div>
+                            <div class="p-3 bg-emerald-50 text-emerald-600 rounded-lg"><i class="fas fa-calendar-check"></i></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Next Token (UPDATED DESIGN) -->
+                    <div class="bg-white p-5 md:p-6 rounded-xl shadow-sm border border-gray-100 col-span-2 md:col-span-1 relative group overflow-visible">
+                        <div class="absolute right-0 top-0 h-full w-24 bg-gradient-to-l from-yellow-50 to-transparent opacity-50 rounded-r-xl"></div>
+                        
+                        <div class="relative z-10">
+                            <div class="flex justify-between items-start mb-2">
+                                <div>
+                                    <p class="text-gray-400 text-[10px] uppercase font-bold tracking-wider mb-1">Counter Status For</p>
+                                    
+                                    <!-- Stylish Dropdown -->
+                                    <div class="relative inline-block group/select">
+                                        <select id="statNextDateFilter" class="appearance-none bg-transparent font-bold text-royal text-sm pr-6 outline-none cursor-pointer border-b border-dashed border-gray-300 pb-0.5 focus:border-gold hover:text-gold transition w-full md:w-auto">
+                                            <!-- JS Fills This -->
+                                        </select>
+                                        <i class="fas fa-chevron-down absolute right-0 top-1/2 -translate-y-1/2 text-gray-400 text-[10px] pointer-events-none group-hover/select:text-gold transition"></i>
+                                    </div>
+                                </div>
+                                <div class="w-10 h-10 rounded-lg bg-yellow-50 flex items-center justify-center text-yellow-600 shadow-sm border border-yellow-100">
+                                    <i class="fas fa-sort-numeric-up-alt"></i>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-baseline gap-2 mt-2">
+                                <h3 class="text-3xl font-bold text-gold" id="statNext">...</h3>
+                                <span class="text-xs text-gray-400 font-medium">Next ID</span>
+                            </div>
+
+                            <!-- Reset Button -->
+                            <button onclick="resetCounter()" class="absolute bottom-3 right-3 text-gray-300 hover:text-red-500 hover:bg-red-50 p-2 rounded-full transition duration-300" title="Reset Counter to 0">
+                                <i class="fas fa-redo-alt text-xs"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 flex flex-col h-[calc(100%-180px)] md:h-auto">
+                    <!-- Filters Toolbar -->
+                    <div class="p-4 border-b border-gray-200 flex flex-col xl:flex-row justify-between gap-4">
+                         <!-- Tabs -->
+                         <div class="flex space-x-6 w-full xl:w-auto border-b xl:border-none pb-2 xl:pb-0">
+                            <button onclick="switchTab('active')" id="tabActive" class="tab-btn active pb-3 text-sm font-medium text-gray-500 transition">Active (Future)</button>
+                            <button onclick="switchTab('history')" id="tabHistory" class="tab-btn pb-3 text-sm font-medium text-gray-500 transition">History</button>
+                        </div>
+
+                        <!-- Filters -->
+                        <div class="flex flex-col sm:flex-row gap-3 w-full xl:w-auto">
+                            <!-- Day Filter Dropdown -->
+                            <div class="relative w-full sm:w-48">
+                                <i class="fas fa-filter absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 z-10"></i>
+                                <select id="dayFilter" onchange="renderTable()" class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-royal focus:border-transparent outline-none text-sm appearance-none bg-white cursor-pointer">
+                                    <option value="all">All Days</option>
+                                </select>
+                                <i class="fas fa-chevron-down absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none"></i>
+                            </div>
+
+                            <!-- Search -->
+                            <div class="relative w-full sm:w-64">
+                                <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                                <input type="text" id="searchInput" placeholder="Search name, token..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-royal focus:border-transparent outline-none text-sm">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="overflow-x-auto custom-scroll flex-1">
+                        <table class="min-w-[1000px] w-full text-left text-sm text-gray-600">
+                            <thead class="bg-gray-50 text-gray-800 font-bold uppercase text-xs tracking-wider sticky top-0 z-10 shadow-sm">
+                                <tr>
+                                    <th class="px-6 py-4 bg-gray-50">Token #</th>
+                                    <th class="px-6 py-4 bg-gray-50">Name</th>
+                                    <th class="px-6 py-4 bg-gray-50">Mobile</th>
+                                    <th class="px-6 py-4 bg-gray-50">City</th>
+                                    <th class="px-6 py-4 bg-gray-50">Day/Date</th>
+                                    <th class="px-6 py-4 text-right bg-gray-50">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="bookingsTable" class="divide-y divide-gray-100">
+                                <tr><td colspan="6" class="px-6 py-8 text-center">Loading data...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- NEW MODAL: Site Settings -->
+    <div id="siteSettingsModal" class="fixed inset-0 z-50 bg-black/60 hidden items-center justify-center backdrop-blur-sm p-4">
+        <div class="bg-white w-full max-w-lg rounded-2xl shadow-2xl p-6 transform transition-all scale-100 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-6 pb-4 border-b">
+                <div>
+                    <h3 class="text-xl font-bold text-royal">Site Configuration</h3>
+                    <p class="text-sm text-gray-500">Manage global website settings</p>
+                </div>
+                <button onclick="closeModal('siteSettingsModal')" class="text-gray-400 hover:text-red-500"><i class="fas fa-times text-xl"></i></button>
+            </div>
+            
+            <form id="siteSettingsForm" class="space-y-6">
+                <!-- Maintenance Mode -->
+                <div class="bg-red-50 p-4 rounded-xl border border-red-100">
+                    <div class="flex items-center justify-between mb-2">
+                        <label class="font-bold text-red-800 flex items-center gap-2"><i class="fas fa-ban"></i> Block Booking (Maintenance)</label>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="maintenanceModeToggle" class="sr-only peer">
+                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-red-600"></div>
+                        </label>
+                    </div>
+                    <p class="text-xs text-red-600/80">If enabled, users will see "Under Maintenance" and cannot book tokens.</p>
+                </div>
+
+                <!-- Popup Message -->
+                <div class="bg-blue-50 p-4 rounded-xl border border-blue-100">
+                    <div class="flex items-center justify-between mb-3">
+                        <label class="font-bold text-blue-900 flex items-center gap-2"><i class="fas fa-bullhorn"></i> Popup Billboard</label>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="showPopupToggle" class="sr-only peer">
+                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                        </label>
+                    </div>
+                    
+                    <div class="space-y-3">
+                         <!-- Image URL Input -->
+                        <div>
+                            <label class="block text-xs font-bold text-blue-900 uppercase mb-1">Image URL (Optional)</label>
+                            <input type="text" id="popupImageInput" class="w-full p-3 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder="https://example.com/poster.jpg">
+                        </div>
+
+                        <!-- Message Input -->
+                        <div>
+                            <label class="block text-xs font-bold text-blue-900 uppercase mb-1">Announcement Message</label>
+                            <textarea id="popupMessageInput" rows="3" class="w-full p-3 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Enter message to display..."></textarea>
+                        </div>
+                    </div>
+                    <p class="text-xs text-blue-600/80 mt-2">Toggle ON to show this message/image as a modal when users visit the site.</p>
+                </div>
+
+                <button type="submit" class="w-full py-3 bg-royal text-white font-bold rounded-lg hover:bg-emerald transition shadow-lg">Save Configuration</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Schedule Manager Modal -->
+    <div id="scheduleModal" class="fixed inset-0 z-50 bg-black/60 hidden items-center justify-center backdrop-blur-sm p-4">
+        <div class="bg-white w-full max-w-2xl rounded-2xl shadow-2xl p-6 transform transition-all scale-100 flex flex-col max-h-[90vh]">
+            <div class="flex justify-between items-center mb-4 border-b pb-4">
+                <div>
+                    <h3 class="text-xl font-bold text-royal">Manage Schedule</h3>
+                    <p class="text-sm text-gray-500">Block days or set token limits for the upcoming week.</p>
+                </div>
+                <button onclick="closeModal('scheduleModal')" class="text-gray-400 hover:text-red-500"><i class="fas fa-times text-xl"></i></button>
+            </div>
+            
+            <div class="grid grid-cols-12 gap-2 text-xs font-bold uppercase text-gray-500 mb-2 px-2">
+                <div class="col-span-5">Day & Date</div>
+                <div class="col-span-3 text-center">Status</div>
+                <div class="col-span-4">Token Limit (0 = Unl.)</div>
+            </div>
+
+            <div id="daysList" class="space-y-2 overflow-y-auto custom-scroll flex-1 pr-2">
+                <!-- JS fills this -->
+            </div>
+
+            <div class="flex justify-end gap-3 border-t pt-4 mt-4">
+                <button onclick="closeModal('scheduleModal')" class="px-4 py-2 bg-gray-100 text-gray-700 font-bold rounded-lg hover:bg-gray-200">Cancel</button>
+                <button onclick="saveSchedule()" class="px-6 py-2 bg-royal text-white font-bold rounded-lg hover:bg-emerald shadow-lg">Save Changes</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Delete All Modal -->
+    <div id="deleteAllModal" class="fixed inset-0 z-50 bg-black/60 hidden items-center justify-center backdrop-blur-sm p-4">
+        <div class="bg-white w-full max-w-sm rounded-2xl shadow-2xl p-6 text-center">
+            <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4"><i class="fas fa-trash-alt text-red-500 text-2xl"></i></div>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">Delete ALL Bookings?</h3>
+            <p class="text-red-500 text-sm mb-6 font-bold">This is destructive and cannot be undone.</p>
+            <div class="flex gap-3">
+                <button onclick="closeModal('deleteAllModal')" class="flex-1 py-3 bg-gray-100 font-bold rounded-lg">Cancel</button>
+                <button id="confirmDeleteAllBtn" class="flex-1 py-3 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700">Wipe Database</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div id="editModal" class="fixed inset-0 z-50 bg-black/50 hidden items-center justify-center backdrop-blur-sm p-4">
+        <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl p-6 transform transition-all scale-100">
+            <h3 class="text-xl font-bold text-royal mb-4">Edit Booking</h3>
+            <form id="editForm" class="space-y-4">
+                <input type="hidden" id="editDocId">
+                <div><label class="block text-xs font-bold text-gray-500 uppercase mb-1">Full Name</label><input type="text" id="editName" required class="w-full p-3 border border-gray-300 rounded-lg"></div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div><label class="block text-xs font-bold text-gray-500 uppercase mb-1">Mobile</label><input type="text" id="editMobile" required class="w-full p-3 border border-gray-300 rounded-lg"></div>
+                    <div><label class="block text-xs font-bold text-gray-500 uppercase mb-1">City</label><input type="text" id="editCity" required class="w-full p-3 border border-gray-300 rounded-lg"></div>
+                </div>
+                <div><label class="block text-xs font-bold text-gray-500 uppercase mb-1">Day</label><input type="text" id="editDay" class="w-full p-3 border border-gray-300 rounded-lg bg-gray-100" readonly></div>
+                <div class="flex gap-3 pt-4">
+                    <button type="button" onclick="closeModal('editModal')" class="flex-1 py-3 bg-gray-100 font-bold rounded-lg">Cancel</button>
+                    <button type="submit" class="flex-1 py-3 bg-royal text-white font-bold rounded-lg">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Modal -->
+    <div id="addModal" class="fixed inset-0 z-50 bg-black/50 hidden items-center justify-center backdrop-blur-sm p-4">
+        <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl p-6 transform transition-all scale-100">
+            <h3 class="text-xl font-bold text-royal mb-4">Manual Booking</h3>
+            <form id="addForm" class="space-y-4">
+                <div><label class="block text-xs font-bold text-gray-500 uppercase mb-1">Full Name</label><input type="text" id="addName" required class="w-full p-3 border border-gray-300 rounded-lg"></div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div><label class="block text-xs font-bold text-gray-500 uppercase mb-1">Mobile</label><input type="text" id="addMobile" required class="w-full p-3 border border-gray-300 rounded-lg"></div>
+                    <div><label class="block text-xs font-bold text-gray-500 uppercase mb-1">City</label><input type="text" id="addCity" required class="w-full p-3 border border-gray-300 rounded-lg"></div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Day</label>
+                    <select id="addDay" class="w-full p-3 border border-gray-300 rounded-lg">
+                        <option value="Manual Entry">Manual Entry</option>
+                    </select>
+                </div>
+                <div class="flex gap-3 pt-4">
+                    <button type="button" onclick="closeModal('addModal')" class="flex-1 py-3 bg-gray-100 font-bold rounded-lg">Cancel</button>
+                    <button type="submit" id="addSubmitBtn" class="flex-1 py-3 bg-royal text-white font-bold rounded-lg">Generate Token</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Print Template -->
+    <div id="printArea" class="hidden">
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold">Khanqah-e-Hussaini</h1>
+            <p class="text-xl mt-2">Booking List</p>
+        </div>
+        <table class="w-full text-left border-collapse">
+            <thead>
+                <tr class="border-b-2 border-black">
+                    <th class="p-2">Token</th>
+                    <th class="p-2">Name</th>
+                    <th class="p-2">Day/Date</th>
+                    <th class="p-2">Mobile</th>
+                    <th class="p-2">City</th>
+                </tr>
+            </thead>
+            <tbody id="printTableBody"></tbody>
+        </table>
+    </div>
+
+    <!-- Main Logic -->
+    <script type="module" src="js/admin.js"></script>
+</body>
+</html>
+
+
