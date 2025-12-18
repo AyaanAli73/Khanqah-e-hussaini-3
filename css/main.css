@@ -1,0 +1,242 @@
+/* =========================================
+   MAIN.CSS - BLUE #1B4053 & TEXTURE THEME
+   ========================================= */
+
+/* --- 1. GLOBAL SETTINGS --- */
+html { scroll-behavior: smooth; }
+
+/* UPDATED: Body now uses a background image if available, else fallback cream */
+body { 
+    width: 100%; 
+    position: relative; 
+    background-color: #FDFBF7; 
+    background-image: url('../assets/images/cream_bg.webp'); /* YOUR  BACKGROUND HERE */
+    background-repeat: repeat;
+    background-size: auto; /* Or 'cover' depending on your pattern */
+    padding-bottom: 40px; 
+}
+
+/* Helper class for sections to force the texture background */
+.bg-texture {
+    background-color: #FDFBF7;
+    background-image: url('../assets/images/cream-bg.webp');
+    background-repeat: repeat;
+}
+
+html.menu-open, body.menu-open { overflow: hidden !important; touch-action: none; }
+.site-wrapper { width: 100%; overflow-x: hidden; position: relative; }
+:root { color-scheme: light; }
+
+/* --- 2. CURSOR --- */
+.cursor-dot, .cursor-outline { position: fixed; top: 0; left: 0; transform: translate(-50%, -50%); border-radius: 50%; z-index: 9999; pointer-events: none; }
+.cursor-dot { width: 8px; height: 8px; background-color: #D4AF37; }
+.cursor-outline { width: 40px; height: 40px; border: 1px solid rgba(212, 175, 55, 0.5); transition: all 0.1s ease-out; }
+
+/* --- 3. PRELOADER (Updated to #1B4053) --- */
+#preloader { 
+    position: fixed; inset: 0; 
+    background: #1B4053; /* NEW BLUE */
+    z-index: 10000; 
+    display: flex; justify-content: center; align-items: center; 
+    transition: opacity 0.8s ease-out, visibility 0.8s ease-out; 
+}
+.loader-ring { width: 80px; height: 80px; border: 4px solid rgba(212, 175, 55, 0.3); border-top: 4px solid #D4AF37; border-radius: 50%; animation: spin 1s linear infinite; box-shadow: 0 0 20px rgba(212, 175, 55, 0.3); }
+
+/* --- 4. TOAST NOTIFICATIONS --- */
+#toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 20000; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
+.toast { 
+    background: rgba(27, 64, 83, 0.95); /* NEW BLUE GLASS */
+    color: #F9F1D8; 
+    padding: 16px 24px; border-radius: 12px; 
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3); border: 1px solid rgba(212, 175, 55, 0.3); 
+    display: flex; align-items: center; gap: 12px; 
+    opacity: 0; transform: translateY(-20px); transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55); 
+    pointer-events: auto; font-family: "Plus Jakarta Sans", sans-serif; font-weight: 600; min-width: 300px; 
+}
+.toast.show { opacity: 1; transform: translateY(0); }
+.toast.error { border-color: #ef4444; color: #fecaca; }
+.toast.success { border-color: #10b981; color: #d1fae5; }
+
+/* --- 5. PROGRESS BAR --- */
+#progress-container { position: fixed; top: 0; left: 0; width: 100%; height: 4px; z-index: 10001; background: transparent; }
+#progress-bar { height: 100%; background: linear-gradient(90deg, #D4AF37, #F9F1D8); width: 0%; box-shadow: 0 0 10px #D4AF37; }
+
+/* --- 6. NAVBAR (Glass Effect) --- */
+#navbar { transition: all 0.4s ease-in-out; }
+.nav-scrolled { top: 10px !important; padding-top: 0 !important; }
+
+.nav-scrolled > div > div {
+    background: rgba(27, 64, 83, 0.85) !important; /* NEW BLUE TRANSPARENT */
+    backdrop-filter: blur(25px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(25px) saturate(180%) !important;
+    border-radius: 50px !important; 
+    padding: 10px 30px !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.25) !important;
+    border-left: 1px solid rgba(255, 255, 255, 0.25) !important;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.25), inset 0 0 20px rgba(255, 255, 255, 0.05) !important;
+}
+
+/* --- 7. MOBILE MENU --- */
+.mobile-overlay {
+    background: rgba(27, 64, 83, 0.98); /* NEW BLUE */
+    backdrop-filter: blur(20px);
+    clip-path: circle(0% at 100% 0%); 
+    -webkit-clip-path: circle(0% at 100% 0%);
+    transition: clip-path 0.8s cubic-bezier(0.86, 0, 0.07, 1);
+    pointer-events: none;
+}
+.mobile-overlay.active {
+    clip-path: circle(150% at 100% 0%);
+    -webkit-clip-path: circle(150% at 100% 0%);
+    pointer-events: all;
+}
+.hamburger line { stroke-width: 6px; transition: 0.6s; }
+.opened .line1 { stroke-dasharray: 90 207; stroke-dashoffset: -134; }
+.opened .line2 { stroke-dasharray: 1 60; stroke-dashoffset: -30; }
+.opened .line3 { stroke-dasharray: 90 207; stroke-dashoffset: -134; }
+
+/* --- 8. INPUTS --- */
+.booking-input { background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(212, 175, 55, 0.3); color: white; transition: all 0.3s; }
+.booking-input:focus { background: rgba(255, 255, 255, 0.2); border-color: #D4AF37; outline: none; box-shadow: 0 0 15px rgba(212, 175, 55, 0.2); }
+.booking-input option:disabled { color: #ff8888; background-color: #2a0a0a; }
+.booking-input option { background-color: #1B4053; color: white; padding: 10px; }
+
+/* --- 9. ANIMATIONS & UTILS --- */
+.animate-zoom { animation: slowZoom 20s infinite alternate; }
+@keyframes slowZoom { 0% { transform: scale(1); } 100% { transform: scale(1.1); } }
+
+.glass-card { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); transition: transform 0.5s ease; }
+.glass-card:hover { box-shadow: 0 20px 40px rgba(0,0,0,0.2); }
+
+.faq-content { max-height: 0; overflow: hidden; transition: max-height 0.4s cubic-bezier(0, 1, 0, 1); }
+.faq-active .faq-content { max-height: 300px; transition: max-height 0.4s ease-in-out; }
+.faq-active i { transform: rotate(180deg); }
+
+/* --- GOLD SHIMMER (Used for Hazrat's Name and Titles) --- */
+.text-shine { background: linear-gradient(to right, #D4AF37 20%, #F9F1D8 40%, #F9F1D8 60%, #D4AF37 80%); background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: shimmer 3s linear infinite; }
+@keyframes shimmer { 0% { background-position: -1000px 0; } 100% { background-position: 1000px 0; } }
+
+/* Marquee Strip */
+.marquee-strip { position: fixed; bottom: 0; left: 0; width: 100%; background: #1B4053; color: #D4AF37; padding: 12px 0; z-index: 9999; border-top: 1px solid rgba(212, 175, 55, 0.5); overflow: hidden; white-space: nowrap; font-family: sans-serif; font-size: 14px; font-weight: 600; box-shadow: 0 -5px 15px rgba(0,0,0,0.2); }
+.marquee-content { display: inline-block; padding-left: 100%; animation: marquee 30s linear infinite; }
+@keyframes marquee { 0% { transform: translate(0, 0); } 100% { transform: translate(-100%, 0); } }
+
+/* --- 10. TYPOGRAPHY & GOLD EFFECTS --- */
+.font-spiritual { font-family: 'Amiri', serif; letter-spacing: 0.02em; }
+
+/* The Liquid Gold Effect */
+.text-liquid-gold {
+    background: linear-gradient(to right, #bf953f, #fcf6ba 20%, #b38728 40%, #fbf5b7 60%, #aa771c 80%);
+    background-size: 200% auto;
+    color: transparent; -webkit-background-clip: text; background-clip: text;
+    animation: shine 4s linear infinite; filter: drop-shadow(0 2px 10px rgba(0,0,0,0.3));
+}
+@keyframes shine { to { background-position: 200% center; } }
+
+/* --- 11. ADDITIONAL ANIMATIONS --- */
+.reveal-text { opacity: 0; transform: translateX(-30px); animation: fadeSlideRight 1s ease-out forwards; }
+.reveal-text-delay { opacity: 0; transform: translateX(-30px); animation: fadeSlideRight 1s ease-out forwards; animation-delay: 0.3s; }
+@keyframes fadeSlideRight { to { opacity: 1; transform: translateX(0); } }
+
+.animate-float { animation: float 6s ease-in-out infinite; }
+@keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+
+.animate-scroll { animation: scroll 40s linear infinite; width: max-content; }
+@keyframes scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+.hover\:pause-scroll:hover { animation-play-state: paused; }
+
+.animate-pulse-slow { animation: pulse-slow 3s infinite; }
+@keyframes pulse-slow { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.05); opacity: 0.9; } }
+
+/* --- 12. PRINT STYLES --- */
+@media print {
+    body * { visibility: hidden; }
+    #tokenModal, #tokenModal * { visibility: visible; }
+    #tokenModal { position: absolute; left: 0; top: 0; width: 100%; height: 100vh; background: white !important; display: flex !important; align-items: center; justify-content: center; box-shadow: none !important; border: none !important; }
+    #tokenModal button { display: none !important; }
+    #tokenModal .bg-royal { background: #1B4053 !important; color: white !important; print-color-adjust: exact; }
+    .ticket-cut { border: 2px dashed #000; box-shadow: none; }
+}
+
+/* --- Services Dynamic Styles --- */
+
+/* Royal Card Hover Effect */
+.bg-pattern {
+    /* Agar pattern image nahi hai to ye CSS pattern use karega */
+    background-image: radial-gradient(#D4AF37 1px, transparent 1px);
+    background-size: 20px 20px;
+}
+
+/* Liquid Gold Text Effect (Already added in previous step but ensures it works here) */
+.text-liquid-gold {
+    background: linear-gradient(
+        to right, 
+        #bf953f, 
+        #fcf6ba 20%, 
+        #b38728 40%, 
+        #fbf5b7 60%, 
+        #aa771c 80%
+    );
+    background-size: 200% auto;
+    color: transparent;
+    -webkit-background-clip: text;
+    background-clip: text;
+    animation: shine 4s linear infinite;
+}
+
+@keyframes shine {
+    to { background-position: 200% center; }
+}
+
+/* --- LIVING GALLERY STYLES --- */
+
+/* Floating Animation (Hawa mein tairna) */
+@keyframes float-gallery {
+    0%, 100% { transform: translateY(0) rotate(var(--tw-rotate)); }
+    50% { transform: translateY(-15px) rotate(var(--tw-rotate)); } /* 15px upar jayega */
+}
+
+/* Isse har card par apply karein par rotation maintain rakhein */
+/* Note: Tailwind ka 'animate-float' simple hota hai, hume custom chahiye jo rotation preserve kare */
+.animate-float {
+    animation: float-gallery 6s ease-in-out infinite;
+}
+
+/* Hover karne par float ruk jaye */
+.animate-float:hover {
+    animation-play-state: paused;
+}
+
+/* Shine Animation (Chamak) */
+@keyframes shine-sweep {
+    0% { left: -100%; opacity: 0; }
+    50% { opacity: 0.5; }
+    100% { left: 200%; opacity: 0; }
+}
+
+.animate-shine {
+    animation: shine-sweep 4s cubic-bezier(0.4, 0.0, 0.2, 1) infinite;
+}
+
+
+/* --- FOOTER ANIMATIONS --- */
+
+/* Ultra Slow Spin for Background Pattern */
+@keyframes spin-slow-ultra {
+    from { transform: translate(-50%, -50%) rotate(0deg); }
+    to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+.animate-spin-slow-ultra {
+    animation: spin-slow-ultra 120s linear infinite;
+}
+
+/* Rising Particles (Noor) */
+@keyframes rise {
+    0% { bottom: -10px; opacity: 0; transform: scale(0.5); }
+    50% { opacity: 0.5; }
+    100% { bottom: 100%; opacity: 0; transform: scale(1.5); }
+}
+.animate-rise {
+    animation: rise 10s linear infinite;
+}
